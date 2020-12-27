@@ -174,13 +174,26 @@
       addEventClick(movieElement);
     })
   }
-  const {data:{movies: actionList}} = await getData('https://yts.mx/api/v2/list_movies.json?genre=action')
+  
+  async function cacheExist (list, ctg){
+    const cacheList = window.localStorage.getItem(list)
+    if (cacheList) {
+      return JSON.parse(cacheList);
+    }
+    const {data:{movies: data}} = await getData(`https://yts.mx/api/v2/list_movies.json?genre=${ctg}`)
+    window.localStorage.setItem(list, JSON.stringify(data))
+    return data;
+  }
+  
+  const actionList = await cacheExist("actionList", "action")
   const $actionContainer = document.querySelector('#action');
   renderMovieList(actionList, $actionContainer, "action")
-  const {data:{movies: dramaList}} = await getData('https://yts.mx/api/v2/list_movies.json?genre=drama')
+  
+  const dramaList = await cacheExist("dramaList", "drama")
   const $dramaContainer = document.getElementById('drama');
   renderMovieList(dramaList, $dramaContainer, "drama")
-  const {data:{movies: animationList}} = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation')
+  
+  const animationList = await cacheExist("animationList", "animation")
   const $animationContainer = document.getElementById('animation');
   renderMovieList(animationList, $animationContainer, "animation")
 
